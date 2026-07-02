@@ -11,6 +11,7 @@ ThemeData _darkThemeMode1 = ThemeData.dark().copyWith(
     bodyMedium: TextStyle(color: DarkAppColors2.neutralColor),
   ),
   colorScheme: ColorScheme.dark(),
+  iconTheme: IconThemeData(color: DarkAppColors2.neutralColor),
 );
 
 ThemeData _lightThemeMode1 = ThemeData.dark().copyWith(
@@ -19,4 +20,5 @@ ThemeData _lightThemeMode1 = ThemeData.dark().copyWith(
     bodyMedium: TextStyle(color: LightAppColors.neutralColor),
   ),
   colorScheme: ColorScheme.light(),
+  iconTheme: IconThemeData(color: DarkAppColors2.tertiaryColor),
 );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:versea/Features/Bible/presentation/Widgets/chapter_card.dart';
+import 'package:versea/Features/Bible/presentation/Widgets/chapters_grid_view_builder.dart';
 import 'package:versea/Features/Bible/presentation/Widgets/testament_chose.dart';
+import 'package:versea/Features/Bible/presentation/functions/load_books.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/utils/Core/api/api_functions.dart';
 import 'package:versea/utils/Core/custom_scaffold.dart';
@@ -28,30 +29,23 @@ class _TestamentScreenState extends State<TestamentScreen> {
   Map<String, dynamic> newBooks = {};
   Map<String, dynamic> newChapters = {};
 
-  Future<void> loadBooks() async {
-    books = await apiFunctions.getBooksFunction();
-    chapters = await apiFunctions.getChaptersFunction();
-
-    int newIndex = 1;
-    int oldIndex = 1;
-
-    for (int index = 1; index < books.length; index++) {
-      if (index >= 50) {
-        newBooks[newIndex.toString()] = books[index.toString()];
-        newChapters[newIndex.toString()] = chapters[index.toString()];
-        newIndex++;
-      } else {
-        oldBooks[oldIndex.toString()] = books[index.toString()];
-        oldChapters[oldIndex.toString()] = chapters[index.toString()];
-        oldIndex++;
-      }
-    }
-    setState(() {});
-  }
+  LoadBooks loadBooks = LoadBooks();
 
   @override
   void initState() {
-    loadBooks();
+    loadBooks.loadBooks(
+      books: books,
+      chapters: chapters,
+      oldBooks: oldBooks,
+      oldChapters: oldChapters,
+      newChapters: newChapters,
+      newBooks: newBooks,
+      apiFunctions: apiFunctions,
+      setState: () {
+        setState(() {});
+      },
+    );
+
     super.initState();
   }
 
@@ -95,30 +89,13 @@ class _TestamentScreenState extends State<TestamentScreen> {
                   },
                 ),
                 SizedBox(height: 20),
-                GridView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    childAspectRatio: 16 / 11,
-                    crossAxisCount: 2,
-                  ),
-
-                  itemCount: isOldTestament ? oldBooks.length : newBooks.length,
-                  itemBuilder: (context, index) {
-                    final bookName = isOldTestament
-                        ? oldBooks[(index + 1).toString()].toString()
-                        : newBooks[(index + 1).toString()].toString();
-                    final chapterCount = isOldTestament
-                        ? oldChapters[(index + 1).toString()].toString()
-                        : newChapters[(index + 1).toString()].toString();
-                    return ChapterCard(
-                      modeIsLight: modeIsLight,
-                      bookName: bookName,
-                      chapterCount: chapterCount,
-                    );
-                  },
+                ChaptersGridViewBuilder(
+                  isOldTestament: isOldTestament,
+                  modeIsLight: modeIsLight,
+                  oldBooks: oldBooks,
+                  oldChapters: oldChapters,
+                  newBooks: newBooks,
+                  newChapters: newChapters,
                 ),
               ],
             ),

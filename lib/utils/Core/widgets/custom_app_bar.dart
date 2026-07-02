@@ -11,6 +11,13 @@ class CustomAppBar extends StatelessWidget {
       width: double.infinity,
       child: Row(
         children: [
+          if (Navigator.canPop(context))
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back_ios),
+            ),
           Spacer(),
           Center(
             child: Text(

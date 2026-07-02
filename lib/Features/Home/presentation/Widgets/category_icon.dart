@@ -20,7 +20,7 @@ class CategoryIcon extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
-      onTap: () => GoRouter.of(context).push(AppRouter.kTestament),
+      onTap: () => GoRouter.of(context).push(AppRouter.kTestamentScreen),
       child: Container(
         width: widthSize * 0.45,
         height: widthSize * 0.3,
