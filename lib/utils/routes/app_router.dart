@@ -23,8 +23,10 @@ class AppRouter {
           final bookId = data['bookId'];
           final bookName = data['bookName'];
           final chapterCount = data['chapterCount'];
+          final chapterID = data['chapterID'];
 
           return ReadingScreen(
+            chapterID: chapterID,
             bookId: bookId,
             bookName: bookName,
             chapterCount: chapterCount,

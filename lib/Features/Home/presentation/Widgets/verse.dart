@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:versea/Features/Home/presentation/Widgets/get_verse_of_the_day.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/utils/Core/app_colors.dart';
 
-class Verse extends StatelessWidget {
+class Verse extends StatefulWidget {
   const Verse({super.key});
+
+  @override
+  State<Verse> createState() => _VerseState();
+}
+
+class _VerseState extends State<Verse> {
+  late Map verseOfDay = {
+    // 'bookName': 'فيلبي',
+    // 'chapterID': 13,
+    // 'verseID': 4,
+    // 'text': 'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّينِي',
+    'bookName': '',
+    'chapterID': '',
+    'verseID': '',
+    'text': '',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    loadVerse();
+  }
+
+  Future<void> loadVerse() async {
+    verseOfDay = await GetVerseOfTheDay().getRef();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +45,7 @@ class Verse extends StatelessWidget {
         ),
         SizedBox(height: 12),
         Text(
-          '"أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّينِي"',
+          verseOfDay['text'],
           style: TextStyle(
             backgroundColor:
                 (!isDark
@@ -36,7 +64,7 @@ class Verse extends StatelessWidget {
         ),
         SizedBox(height: 12),
         Text(
-          'فيلبي 4:13',
+          '${verseOfDay['bookName']} ${verseOfDay['verseID']}:${verseOfDay['chapterID']}',
 
           style: TextStyle(
             backgroundColor:

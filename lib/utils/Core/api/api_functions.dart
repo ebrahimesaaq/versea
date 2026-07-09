@@ -6,7 +6,7 @@ import 'package:versea/utils/Core/api/api_services.dart';
 class ApiFunctions {
   Future<Map<String, dynamic>> getChaptersFunction() async {
     final response = await http.get(
-      Uri.parse('${ApiServices.apiReference}json/chapters'),
+      Uri.parse('${ApiServices.apiReference}/json/chapters'),
     );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -20,7 +20,24 @@ class ApiFunctions {
 
   Future<Map<String, dynamic>> getBooksFunction() async {
     final response = await http.get(
-      Uri.parse('${ApiServices.apiReference}json/books'),
+      Uri.parse('${ApiServices.apiReference}/json/books'),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    print(response.statusCode);
+    print(response.body);
+
+    throw Exception('Failed');
+  }
+
+  Future<Map<String, dynamic>> getVersesFunction({
+    required int bookId,
+    required int chapterId,
+  }) async {
+    final response = await http.get(
+      Uri.parse('${ApiServices.apiReference}?book=$bookId&ch=$chapterId'),
     );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

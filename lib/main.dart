@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:versea/utils/Core/languages/langs.dart';
+import 'package:versea/utils/data_source/hive_init.dart';
 import 'package:versea/utils/routes/app_router.dart';
 import 'generated/l10n.dart';
 import 'package:versea/utils/Core/themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+SharedPreferences? prefs;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
+
+  HiveInit().init();
   runApp(const MyApp());
 }
 

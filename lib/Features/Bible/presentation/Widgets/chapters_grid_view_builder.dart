@@ -52,6 +52,7 @@ class ChaptersGridViewBuilder extends StatelessWidget {
         return InkWell(
           onTap: () {
             navigateToReadingScreen(
+              chapterID: 1,
               context: context,
               bookId: bookId,
               bookNameForReading: bookNameForReading,
@@ -67,20 +68,22 @@ class ChaptersGridViewBuilder extends StatelessWidget {
       },
     );
   }
+}
 
-  void navigateToReadingScreen({
-    required BuildContext context,
-    required int bookId,
-    required String bookNameForReading,
-    required int chapterCountForReading,
-  }) {
-    GoRouter.of(context).push(
-      AppRouter.kReadingScreen,
-      extra: {
-        'bookId': bookId,
-        'bookName': bookNameForReading,
-        'chapterCount': chapterCountForReading,
-      },
-    );
-  }
+void navigateToReadingScreen({
+  required BuildContext context,
+  required int bookId,
+  required String bookNameForReading,
+  required int chapterCountForReading,
+  required int chapterID,
+}) {
+  GoRouter.of(context).push(
+    AppRouter.kReadingScreen,
+    extra: {
+      'bookId': bookId,
+      'bookName': bookNameForReading,
+      'chapterCount': chapterCountForReading,
+      'chapterID': chapterID,
+    },
+  );
 }

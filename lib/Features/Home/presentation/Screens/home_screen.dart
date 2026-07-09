@@ -4,6 +4,7 @@ import 'package:versea/Features/Home/presentation/Widgets/continue_reading_card.
 import 'package:versea/Features/Home/presentation/Widgets/verse_of_the_day_category.dart';
 import 'package:versea/Features/Home/presentation/Widgets/welcome_category.dart';
 import 'package:versea/generated/l10n.dart';
+import 'package:versea/main.dart';
 import 'package:versea/utils/Core/custom_scaffold.dart';
 import 'package:versea/utils/Core/widgets/custom_app_bar.dart';
 
@@ -32,8 +33,30 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 12),
-                ContinueReadingCard(isOldTestament: true, progress: 0.6),
-                ContinueReadingCard(isOldTestament: false, progress: 0.3),
+                ContinueReadingCard(
+                  bookID: prefs?.getInt('oldBookID') ?? 1,
+                  chapterCount: prefs?.getInt('oldChapterCount') ?? 0,
+                  chapterID: prefs?.getInt('oldChapter') ?? 0,
+                  bookName: prefs?.getString('oldBookName') ?? 'سفر التكوين',
+                  isOldTestament: true,
+                  progress:
+                      (((prefs?.getInt('oldChapter') ?? 0) /
+                                  (prefs?.getInt('oldChapterCount') ?? 1))
+                              .clamp(0, 1))
+                          .toDouble(),
+                ),
+                ContinueReadingCard(
+                  bookID: prefs?.getInt('newBookID') ?? 50,
+                  chapterCount: prefs?.getInt('newChapterCount') ?? 0,
+                  chapterID: prefs?.getInt('newChapter') ?? 0,
+                  bookName: prefs?.getString('newBookName') ?? 'انجيل متى',
+                  isOldTestament: false,
+                  progress:
+                      (((prefs?.getInt('newChapter') ?? 0) /
+                                  (prefs?.getInt('newChapterCount') ?? 1))
+                              .clamp(0, 1))
+                          .toDouble(),
+                ),
               ],
             ),
           ),

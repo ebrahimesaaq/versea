@@ -11,7 +11,8 @@ class WelcomeCategory extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          '${S.of(context).welcome} Abram',
+          S.of(context).welcome,
+          // '${S.of(context).welcome} Abram',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Text(S.of(context).miniTagLine, style: TextStyle(fontSize: 14)),

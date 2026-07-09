@@ -21,7 +21,9 @@ class TestamentChose extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: modeIsLight ? Colors.grey[350] : Colors.grey[900],
+        color: modeIsLight
+            ? Colors.brown[300]!.withValues(alpha: 0.5)
+            : Colors.grey[900],
         borderRadius: BorderRadius.circular(100),
       ),
       width: double.infinity,
