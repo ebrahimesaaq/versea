@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
 
       locale: Locale(Langs.ar),
       theme: AppThemes().lightTheme,
-      
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:versea/Features/Bible/presentation/Widgets/chapters_grid_view_builder.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/main.dart';
 import 'package:versea/utils/Core/api/api_functions.dart';
