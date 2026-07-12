@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:versea/Features/Bible/presentation/Widgets/chapters_grid_view_builder.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/utils/Core/assets.dart';
+import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
+import 'package:versea/utils/data_source/local_data_source/book_code.dart';
 
 class ContinueReadingCard extends StatelessWidget {
   final bool isOldTestament;
@@ -31,9 +33,12 @@ class ContinueReadingCard extends StatelessWidget {
       onTap: () {
         navigateToReadingScreen(
           context: context,
-          bookId: bookID,
-          bookNameForReading: bookName,
-          chapterCountForReading: chapterCount,
+          book: BibleBookModel(
+            code: bibleBooks[bookID].code,
+            name: bibleBooks[bookID - 1].name,
+            chapters: bibleBooks[bookID - 1].chapters,
+            id: bookID,
+          ),
           chapterID: chapterID,
         );
       },

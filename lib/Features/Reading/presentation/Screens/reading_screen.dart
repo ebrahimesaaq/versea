@@ -1,26 +1,24 @@
+import 'dart:convert';
+
 import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:versea/Features/Bible/presentation/Widgets/chapters_grid_view_builder.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/main.dart';
 import 'package:versea/utils/Core/api/api_functions.dart';
 import 'package:versea/utils/Core/custom_scaffold.dart';
 import 'package:versea/utils/Core/widgets/custom_app_bar.dart';
+import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
+import 'package:versea/utils/data_source/local_data_source/book_code.dart';
+import 'package:versea/utils/routes/app_router.dart';
 import 'package:versea/utils/routes/consts.dart';
 
 class ReadingScreen extends StatefulWidget {
-  final int bookId;
-  final String bookName;
-  final int chapterCount;
+  final BibleBookModel book;
   final int chapterID;
-  const ReadingScreen({
-    super.key,
-    required this.bookId,
-    required this.bookName,
-    required this.chapterCount,
-    required this.chapterID,
-  });
+  const ReadingScreen({super.key, required this.book, required this.chapterID});
 
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -29,29 +27,27 @@ class ReadingScreen extends StatefulWidget {
 class _ReadingScreenState extends State<ReadingScreen> {
   ApiFunctions apiFunctions = ApiFunctions();
 
-  Map<String, dynamic> data = {};
-  List verses = [];
-
-  List<Map<String, dynamic>> sections = [];
-
-  int verseaCount = 0;
-
   late int chapterId;
 
+  Map<String, dynamic> data = {};
+  List<String> verses = [];
+
   Future<void> getVerses() async {
-    data = await apiFunctions.getVersesFunction(
-      bookId: widget.bookId,
-      chapterId: chapterId,
+    final jsonString = await rootBundle.loadString(
+      'assets/bible/arb_vdv/${widget.book.code}/$chapterId.json',
     );
 
-    verses = data['arr'] as List;
+    data = json.decode(jsonString);
 
-    verseaCount = data['verses_count'];
+    verses.clear();
 
-    sections = data['sections'].cast<Map<String, dynamic>>();
+    for (final item in data['chapter']['content']) {
+      if (item['type'] == 'verse') {
+        verses.add(item['content'][0]);
+      }
+    }
 
     setState(() {});
-    print(verses);
   }
 
   int verseShow = -1;
@@ -82,9 +78,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
-                      int.parse(data['bookID']) >= 50
-                          ? 'العهد الجديد'
-                          : 'العهد القديم',
+                      widget.book.id <= 39 ? 'العهد القديم' : 'العهد الجديد',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -93,7 +87,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    '${widget.bookName}: الإصـحـــــــــاح  ${data['chapter']}',
+                    '${widget.book.name}: الإصـحـــــــــاح  ${data['chapter']['number']}',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
@@ -104,14 +98,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
                       SizedBox(
                         width: 160,
                         child: DropdownFlutter(
-                          hintText: 'الإصحــــــاح ${data['chapter']}',
+                          hintText:
+                              'الإصحــــــاح ${data['chapter']['number']}',
                           // animationCurve: Curves.easeInOut,
                           decoration: CustomDropdownDecoration(
                             closedFillColor: Colors.amber.withValues(alpha: 0),
                             // expandedFillColor: Colors.amber.withValues(alpha: 1),
                           ),
                           items: List.generate(
-                            widget.chapterCount,
+                            widget.book.chapters,
                             (index) =>
                                 ('الإصحــــــاح ${index + 1}').toString(),
                           ),
@@ -128,41 +123,34 @@ class _ReadingScreenState extends State<ReadingScreen> {
                       SizedBox(
                         width: 160,
                         child: DropdownFlutter(
-                          hintText: booksData[widget.bookId - 1]['name'],
+                          hintText: widget.book.name,
                           // animationCurve: Curves.easeInOut,
                           decoration: CustomDropdownDecoration(
                             closedFillColor: Colors.amber.withValues(alpha: 0),
                             // expandedFillColor: Colors.amber.withValues(alpha: 1),
                           ),
                           items: List.generate(
-                            widget.bookId >= 50 ? 27 : 49,
-                            (index) => widget.bookId >= 50
-                                ? booksData[index + 49]['name']
-                                : booksData[index]['name'],
+                            widget.book.id >= 40 ? 27 : 39,
+                            (index) => widget.book.id >= 40
+                                ? bibleBooks[index + 39].name
+                                : bibleBooks[index].name,
                           ),
 
                           onChanged: (value) {
-                            for (
-                              int index = 0;
-                              index < booksData.length;
-                              index++
-                            ) {
-                              if (booksData[index]['name'] == value) {
-                                setState(() {
-                                  navigateToReadingScreen(
-                                    context: context,
-                                    bookId: index + 1,
-                                    bookNameForReading:
-                                        booksData[index]['name'],
-                                    chapterCountForReading:
-                                        booksData[index]['chapters'],
-                                    chapterID: 1,
-                                  );
-                                  getVerses();
-                                  setState(() {});
-                                });
-                              }
-                            }
+                            final selectedBook = bibleBooks.firstWhere(
+                              (book) => book.name == value,
+                            );
+
+                            GoRouter.of(context).pushReplacement(
+                              AppRouter.kReadingScreen,
+                              extra: {'book': selectedBook, 'chapterID': 1},
+                            );
+
+                            // navigateToReadingScreen(
+                            //   context: context,
+                            //   book: selectedBook,
+                            //   chapterID: 1,
+                            // );
                           },
                         ),
                       ),
@@ -174,7 +162,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: verses.length - 1,
+                    itemCount: verses.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         onLongPress: () {
@@ -190,48 +178,54 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   SizedBox(height: 30),
                   TextButton(
                     onPressed: () {
-                      final bookId = int.parse(data['bookID']);
-                      final chapter = int.parse(data['chapter']);
+                      final bookId = widget.book.id;
+                      final chapter = data['chapter']['number'];
 
-                      if (chapterId < widget.chapterCount) {
+                      if (chapterId < widget.book.chapters) {
                         chapterId++;
                         getVerses();
-                        if (bookId >= 50) {
-                          prefs?.setString('newBookName', widget.bookName);
-                          prefs?.setInt('newBookID', widget.bookId);
+                        if (bookId >= 40) {
+                          prefs?.setString('newBookName', widget.book.name);
+                          prefs?.setInt('newBookID', widget.book.id);
                           prefs?.setInt('newChapter', chapter + 1);
-                          prefs?.setInt('newChapterCount', widget.chapterCount);
+                          prefs?.setInt(
+                            'newChapterCount',
+                            widget.book.chapters,
+                          );
                         } else {
-                          prefs?.setString('oldBookName', widget.bookName);
-                          prefs?.setInt('oldBookID', widget.bookId);
+                          prefs?.setString('oldBookName', widget.book.name);
+                          prefs?.setInt('oldBookID', widget.book.id);
                           prefs?.setInt('oldChapter', chapter + 1);
-                          prefs?.setInt('oldChapterCount', widget.chapterCount);
+                          prefs?.setInt(
+                            'oldChapterCount',
+                            widget.book.chapters,
+                          );
                         }
 
                         setState(() {});
                       } else {
                         Navigator.pop(context);
-                        if (bookId >= 50) {
+                        if (bookId >= 40) {
                           prefs?.setString(
                             'newBookName',
-                            booksData[widget.bookId]['name'],
+                            booksData[widget.book.id]['name'],
                           );
-                          prefs?.setInt('newBookID', widget.bookId + 1);
+                          prefs?.setInt('newBookID', widget.book.id + 1);
                           prefs?.setInt('newChapter', 1);
                           prefs?.setInt(
                             'newChapterCount',
-                            booksData[widget.bookId]['chapters'],
+                            booksData[widget.book.id]['chapters'],
                           );
                         } else {
                           prefs?.setString(
                             'oldBookName',
-                            booksData[widget.bookId]['name'],
+                            booksData[widget.book.id]['name'],
                           );
-                          prefs?.setInt('oldBookID', widget.bookId + 1);
+                          prefs?.setInt('oldBookID', widget.book.id + 1);
                           prefs?.setInt('oldChapter', 1);
                           prefs?.setInt(
                             'oldChapterCount',
-                            booksData[widget.bookId]['chapters'],
+                            booksData[widget.book.id]['chapters'],
                           );
                         }
                       }

@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:versea/Features/Bible/presentation/Screens/testament_screen.dart';
 import 'package:versea/Features/Home/presentation/Screens/home_screen.dart';
 import 'package:versea/Features/Reading/presentation/Screens/reading_screen.dart';
+import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
 
 class AppRouter {
   static const kHomeView = '/homeView';
@@ -20,17 +21,10 @@ class AppRouter {
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
 
-          final bookId = data['bookId'];
-          final bookName = data['bookName'];
-          final chapterCount = data['chapterCount'];
-          final chapterID = data['chapterID'];
+          final BibleBookModel book = data['book'];
+          final int chapterID = data['chapterID'];
 
-          return ReadingScreen(
-            chapterID: chapterID,
-            bookId: bookId,
-            bookName: bookName,
-            chapterCount: chapterCount,
-          );
+          return ReadingScreen(book: book, chapterID: chapterID);
         },
       ),
     ],

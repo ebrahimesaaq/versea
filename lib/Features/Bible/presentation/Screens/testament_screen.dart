@@ -7,6 +7,7 @@ import 'package:versea/generated/l10n.dart';
 import 'package:versea/utils/Core/api/api_functions.dart';
 import 'package:versea/utils/Core/custom_scaffold.dart';
 import 'package:versea/utils/Core/widgets/custom_app_bar.dart';
+import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
 
 class TestamentScreen extends StatefulWidget {
   const TestamentScreen({super.key});
@@ -20,27 +21,18 @@ class _TestamentScreenState extends State<TestamentScreen> {
 
   ApiFunctions apiFunctions = ApiFunctions();
 
-  Map<String, dynamic> books = {};
-  Map<String, dynamic> chapters = {};
-
-  Map<String, dynamic> oldBooks = {};
-  Map<String, dynamic> oldChapters = {};
-
-  Map<String, dynamic> newBooks = {};
-  Map<String, dynamic> newChapters = {};
+  List<BibleBookModel> oldBooks = [];
+  List<BibleBookModel> newBooks = [];
 
   LoadBooks loadBooks = LoadBooks();
 
   @override
   void initState() {
     loadBooks.loadBooks(
-      books: books,
-      chapters: chapters,
       oldBooks: oldBooks,
-      oldChapters: oldChapters,
-      newChapters: newChapters,
+
       newBooks: newBooks,
-      apiFunctions: apiFunctions,
+
       setState: () {
         setState(() {});
       },
@@ -68,13 +60,7 @@ class _TestamentScreenState extends State<TestamentScreen> {
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 12),
                 TestamentChose(
                   modeIsLight: modeIsLight,
@@ -93,9 +79,7 @@ class _TestamentScreenState extends State<TestamentScreen> {
                   isOldTestament: isOldTestament,
                   modeIsLight: modeIsLight,
                   oldBooks: oldBooks,
-                  oldChapters: oldChapters,
                   newBooks: newBooks,
-                  newChapters: newChapters,
                 ),
               ],
             ),
