@@ -1,41 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:versea/Features/Home/presentation/Widgets/get_verse_of_the_day.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:versea/Features/Home/data/cubits/verse_of_day_cubit/verse_of_day_cubit.dart';
+import 'package:versea/Features/Home/data/cubits/verse_of_day_cubit/verse_of_day_states.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/utils/Core/app_colors.dart';
 
-class Verse extends StatefulWidget {
+class Verse extends StatelessWidget {
   const Verse({super.key});
-
-  @override
-  State<Verse> createState() => _VerseState();
-}
-
-class _VerseState extends State<Verse> {
-  late Map verseOfDay = {
-    // 'bookName': 'فيلبي',
-    // 'chapterID': 13,
-    // 'verseID': 4,
-    // 'text': 'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّينِي',
-    'bookName': '',
-    'chapterID': '',
-    'verseID': '',
-    'text': '',
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    loadVerse();
-  }
-
-  Future<void> loadVerse() async {
-    verseOfDay = await GetVerseOfTheDay().getRef();
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return BlocProvider<VerseOfDayCubit>(
+      create: (context) => VerseOfDayCubit()..verseOfTheDay(),
+      child: BlocBuilder<VerseOfDayCubit, VerseOfDayStates>(
+        builder: (context, state) {
+          if (state is VerseOfDayLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (state is VerseOfDaySuccess) {
+            return VerseWidget(isDark: isDark, verseOfDay: state.data);
+          }
+
+          if (state is VerseOfDayFailure) {
+            return VerseWidget(
+              isDark: isDark,
+              verseOfDay: {
+                'text': state.message,
+                'bookName': 'Error',
+                'chapterID': 0,
+                'verseID': 0,
+              },
+            );
+          }
+          return VerseWidget(
+            isDark: isDark,
+            verseOfDay: {
+              'text': 'Error',
+              'bookName': 'Error',
+              'chapterID': 0,
+              'verseID': 0,
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class VerseWidget extends StatelessWidget {
+  const VerseWidget({
+    super.key,
+    required this.isDark,
+    required this.verseOfDay,
+  });
+
+  final bool isDark;
+  final Map<String, dynamic> verseOfDay;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
@@ -46,6 +70,7 @@ class _VerseState extends State<Verse> {
         SizedBox(height: 12),
         Text(
           verseOfDay['text'],
+
           style: TextStyle(
             backgroundColor:
                 (!isDark
@@ -65,7 +90,6 @@ class _VerseState extends State<Verse> {
         SizedBox(height: 12),
         Text(
           '${verseOfDay['bookName']} ${verseOfDay['verseID']}:${verseOfDay['chapterID']}',
-
           style: TextStyle(
             backgroundColor:
                 (!isDark

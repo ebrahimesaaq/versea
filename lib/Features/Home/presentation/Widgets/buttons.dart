@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:versea/Features/Home/presentation/Widgets/get_verse_of_the_day.dart';
+import 'package:versea/Features/Home/data/cubits/verse_of_day_cubit/verse_of_day_cubit.dart';
 import 'package:versea/generated/l10n.dart';
 import 'package:versea/main.dart';
 import 'package:versea/utils/Core/app_colors.dart';
+import 'package:versea/utils/routes/consts.dart';
 
 class Buttons extends StatefulWidget {
   const Buttons({super.key});
@@ -13,21 +14,26 @@ class Buttons extends StatefulWidget {
 }
 
 class _ButtonsState extends State<Buttons> {
-  GetVerseOfTheDay getVerseOfTheDay = GetVerseOfTheDay();
   List<String> savedVerses = [];
+  List<String> savedChapterIDs = [];
+  List<String> savedVerseIDs = [];
+  List<String> savedBookNames = [];
+
   Map verseOfTheDay = {};
   @override
   void initState() {
     loadVerse();
-    savedVerses = prefs?.getStringList('dailyVerseSave') ?? [];
+
     super.initState();
   }
 
   Future loadVerse() async {
-    verseOfTheDay = await getVerseOfTheDay.getRef();
+    savedVerses = prefs?.getStringList(kSavedVerses) ?? [];
+    savedChapterIDs = prefs?.getStringList(kSavedChapterIDs) ?? [];
+    savedVerseIDs = prefs?.getStringList(kSavedVerseIDs) ?? [];
+    savedBookNames = prefs?.getStringList(kSavedBookNames) ?? [];
+    verseOfTheDay = await VerseOfDayCubit().verseOfTheDay();
   }
-
-  final prifs = prefs?.getStringList('dailyVerseSave');
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,7 @@ class _ButtonsState extends State<Buttons> {
 
             await SharePlus.instance.share(
               ShareParams(
-                title: 'Versea',
+                title: 'To day`s verse',
                 text:
                     '${verseOfTheDay['text']}\n ${verseOfTheDay['bookName']} ${verseOfTheDay['verseID']}:${verseOfTheDay['chapterID']}',
               ),
@@ -69,9 +75,15 @@ class _ButtonsState extends State<Buttons> {
         ),
         TextButton(
           onPressed: () async {
-            if (!savedVerses.contains(verseOfTheDay['chapterID'])) {
+            if (!savedVerses.contains(verseOfTheDay['text'])) {
               savedVerses.add(verseOfTheDay['text']);
-              await prefs?.setStringList('dailyVerseSave', savedVerses);
+              savedBookNames.add(verseOfTheDay['bookName']);
+              savedChapterIDs.add(verseOfTheDay['chapterID']);
+              savedVerseIDs.add(verseOfTheDay['verseID']);
+              await prefs?.setStringList(kSavedVerses, savedVerses);
+              await prefs?.setStringList(kSavedBookNames, savedBookNames);
+              await prefs?.setStringList(kSavedChapterIDs, savedChapterIDs);
+              await prefs?.setStringList(kSavedVerseIDs, savedVerseIDs);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

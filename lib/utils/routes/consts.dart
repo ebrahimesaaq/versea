@@ -1,5 +1,9 @@
 const String kBookBox = 'book_box';
 const String kChapterBox = 'chapter_box';
+const String kSavedVerses = 'dailyVerseSave';
+const String kSavedBookNames = 'dailyBookNames';
+const String kSavedVerseIDs = 'dailyVerseIDs';
+const String kSavedChapterIDs = 'dailyChapterIDs';
 
 const List<Map<String, dynamic>> booksData = [
   {'name': 'سفر التكوين', 'chapters': 50},
@@ -77,5 +81,5 @@ const List<Map<String, dynamic>> booksData = [
   {'name': 'رسالة يوحنا الرسول الثانية', 'chapters': 1},
   {'name': 'رسالة يوحنا الرسول الثالثة', 'chapters': 1},
   {'name': 'رسالة يهوذا', 'chapters': 1},
-  {'name': 'سفر رؤيا يوحنا اللاهوتي', 'chapters': 22},
+  {'name': 'سفر رؤيا يوحنا اللاه            وتي', 'chapters': 22},
 ];

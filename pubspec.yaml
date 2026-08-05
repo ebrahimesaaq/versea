@@ -34,6 +34,7 @@ dependencies:
   equatable: any
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
   freezed: any
