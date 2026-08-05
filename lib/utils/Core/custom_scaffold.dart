@@ -3,13 +3,16 @@ import 'package:versea/utils/Core/assets.dart';
 
 class CustomScaffold extends StatelessWidget {
   final Widget? body;
-  const CustomScaffold({super.key, this.body});
+  final Widget? bottomNavigationBar;
+
+  const CustomScaffold({super.key, this.body, this.bottomNavigationBar});
 
   @override
   Widget build(BuildContext context) {
     bool theme = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      bottomNavigationBar: bottomNavigationBar ?? SizedBox(),
       body: Stack(
         children: [
           Positioned(
