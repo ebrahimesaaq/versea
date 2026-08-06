@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "22694069",
+    "project_id": "versea-e29cb",
+    "storage_bucket": "versea-e29cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22694069:android:1daeaf04b56371a0a316fc",
+        "android_client_info": {
+          "package_name": "com.example.versea"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVyqEwyuaDNWzhDrbJ8HCra7DrAS8Z6C0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
