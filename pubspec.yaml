@@ -38,6 +38,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  flutter_svg: ^2.3.0
   freezed: any
   freezed_annotation: any
   go_router: ^17.3.0
@@ -136,6 +137,7 @@ flutter:
     - assets/bible/arb_vdv/ZEC/
     - assets/bible/arb_vdv/ZEP/
     - assets/images/
+    - assets/images/icons/
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -146,12 +148,16 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: Libertinus
+      fonts:
+        - asset: assets/fonts/LibertinusSerif-Bold.ttf
+        - asset: assets/fonts/LibertinusSerif-BoldItalic.ttf
+        - asset: assets/fonts/LibertinusSerif-Italic.ttf
+        - asset: assets/fonts/LibertinusSerif-Regular.ttf
+        - asset: assets/fonts/LibertinusSerif-SemiBold.ttf
+        - asset: assets/fonts/LibertinusSerif-SemiBoldItalic.ttf
+          style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
