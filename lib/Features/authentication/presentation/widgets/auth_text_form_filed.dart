@@ -6,6 +6,10 @@ class AuthTextFormFiled extends StatelessWidget {
   final String? hintText;
   final String? Function(String?)? validator;
   final TextInputType? textInputType;
+  final Widget? icon;
+  final Widget? suffixIcon;
+  final bool? obscureText;
+  final AutovalidateMode? autovalidateMode;
   const AuthTextFormFiled({
     super.key,
     this.controller,
@@ -13,6 +17,10 @@ class AuthTextFormFiled extends StatelessWidget {
     this.validator,
     required this.title,
     this.textInputType,
+    this.icon,
+    this.suffixIcon,
+    this.obscureText,
+    this.autovalidateMode,
   });
 
   @override
@@ -30,11 +38,15 @@ class AuthTextFormFiled extends StatelessWidget {
           ),
         ),
         TextFormField(
+          autovalidateMode: autovalidateMode,
           style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
           controller: controller,
           validator: validator,
           keyboardType: textInputType,
+          obscureText: obscureText ?? false,
           decoration: InputDecoration(
+            icon: icon,
+            suffixIcon: suffixIcon,
             hintText: hintText,
             hintStyle: TextStyle(
               fontSize: 14,

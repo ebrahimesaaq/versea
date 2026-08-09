@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:versea/Features/Bible/presentation/Screens/testament_screen.dart';
 import 'package:versea/Features/Home/presentation/Screens/home_screen.dart';
@@ -5,7 +6,10 @@ import 'package:versea/Features/Reading/presentation/Screens/reading_screen.dart
 import 'package:versea/Features/authentication/presentation/screens/login_screen.dart';
 import 'package:versea/Features/authentication/presentation/screens/sign_up_screen.dart';
 import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
+import 'package:versea/utils/routes/auth_notifier.dart';
 import 'package:versea/utils/routes/route_observer.dart';
+
+final authNotifier = AuthNotifier();
 
 class AppRouter {
   static const kHomeView = '/homeView';
@@ -13,10 +17,18 @@ class AppRouter {
   static const kReadingScreen = '/readingScreen';
   static const kLoginScreen = '/loginScreen';
   static const kSignUpScreen = '/signUpScreen';
+
   static final router = GoRouter(
+    refreshListenable: authNotifier,
     observers: [routeObserver],
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/',
+        redirect: (context, state) {
+          final user = FirebaseAuth.instance.currentUser;
+          return user == null ? kLoginScreen : kHomeView;
+        },
+      ),
       GoRoute(path: kHomeView, builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: kTestamentScreen,
