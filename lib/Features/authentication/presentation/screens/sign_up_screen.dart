@@ -59,6 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     confirmPassController: confirmPassController,
                     authFunction: () {
                       context.read<RegisterCubit>().register(
+                        fullName: fullnameController.text,
                         email: emailController.text,
                         password: passwordController.text,
                       );

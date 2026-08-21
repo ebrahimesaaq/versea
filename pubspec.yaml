@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   
+  cloud_firestore: ^6.8.0
   cupertino_icons: ^1.0.8
   dropdown_flutter: ^1.1.0
   equatable: any
@@ -43,6 +44,7 @@ dependencies:
   freezed: any
   freezed_annotation: any
   go_router: ^17.3.0
+  google_sign_in: ^7.2.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   
@@ -52,6 +54,7 @@ dependencies:
   json_serializable: any
   share_plus: ^13.2.0
   shared_preferences: ^2.5.5
+
 
 dev_dependencies:
   flutter_lints: ^6.0.0

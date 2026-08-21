@@ -10,6 +10,7 @@ class AuthTextFormFiled extends StatelessWidget {
   final Widget? suffixIcon;
   final bool? obscureText;
   final AutovalidateMode? autovalidateMode;
+  final GlobalKey<FormFieldState>? myKey;
   const AuthTextFormFiled({
     super.key,
     this.controller,
@@ -21,6 +22,7 @@ class AuthTextFormFiled extends StatelessWidget {
     this.suffixIcon,
     this.obscureText,
     this.autovalidateMode,
+    this.myKey,
   });
 
   @override
@@ -38,6 +40,7 @@ class AuthTextFormFiled extends StatelessWidget {
           ),
         ),
         TextFormField(
+          key: myKey,
           autovalidateMode: autovalidateMode,
           style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
           controller: controller,

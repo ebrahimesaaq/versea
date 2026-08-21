@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:versea/Features/authentication/presentation/widgets/auth_button.dart';
-import 'package:versea/Features/authentication/presentation/widgets/auth_text_form_filed.dart';
+import 'package:versea/Features/authentication/auth_cubit/login_cubit/login_cubit.dart';
+import 'package:versea/Features/authentication/auth_cubit/login_cubit/login_states.dart';
 import 'package:versea/Features/authentication/presentation/widgets/icon_app.dart';
+import 'package:versea/Features/authentication/presentation/widgets/log_in_ui.dart';
 import 'package:versea/Features/authentication/presentation/widgets/other_ways_to_sign_in.dart';
 import 'package:versea/Features/authentication/presentation/widgets/separator.dart';
 import 'package:versea/utils/routes/app_router.dart';
@@ -15,6 +17,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,76 +42,70 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      offset: Offset(3, 8),
-                      blurRadius: 5,
-                    ),
-                  ],
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AuthTextFormFiled(
-                      textInputType: TextInputType.emailAddress,
-                      title: 'البريد الإلكتروني',
-                      hintText: 'أدخل بريدك الإلكتروني',
-                    ),
-                    AuthTextFormFiled(
-                      textInputType: TextInputType.visiblePassword,
-                      title: 'كلمة المرور',
-                      hintText: 'أدخل كلمة المرور',
-                    ),
-
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size(50, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        alignment: Alignment.centerRight,
-                      ),
-                      child: Text(
-                        'نسيت كلمة المرور؟',
-
-                        style: TextStyle(
-                          fontFamily: 'Libertinus',
-                          color: Colors.black,
+              BlocConsumer<LoginCubit, LoginStates>(
+                listener: (context, state) {
+                  if (state is LoginSuccessState) {
+                    GoRouter.of(context).pushReplacement(AppRouter.kHomeView);
+                  }
+                  if (state is LoginFailureState) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.errMessage)));
+                  }
+                  if (state is EmailSentFailureState) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.errMessage)));
+                  }
+                  if (state is EmailSentSuccessState) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'تم ارسال رابط الي بريدك الالكتروني بنجاح',
                         ),
                       ),
-                    ),
-                    SizedBox(height: 12),
-                    AuthButton(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'تسجيل الدخول',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Libertinus',
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward),
-                        ],
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return Stack(
+                    children: [
+                      LogInUi(
+                        forgetPassword: () {
+                          context.read<LoginCubit>().forgetPassword(
+                            emailController.text,
+                          );
+                        },
+                        emailController: emailController,
+                        passController: passController,
+                        loginCode: () {
+                          if (state is! EmailSentLoadingState) {
+                            context
+                                .read<LoginCubit>()
+                                .loginWithEmailAndPassword(
+                                  emailController.text,
+                                  passController.text,
+                                );
+                          }
+                        },
                       ),
-                    ),
-                  ],
-                ),
+                      if (state is LoginLoadingState ||
+                          state is EmailSentLoadingState)
+                        const Center(child: CircularProgressIndicator()),
+                    ],
+                  );
+                },
               ),
+
               SizedBox(height: 50),
               Separator(),
               SizedBox(height: 20),
-              OtherWaysToSignIn(),
+              OtherWaysToSignIn(
+                googleSignIn: () {
+                  print('Google button pressed');
+                  context.read<LoginCubit>().loginWithGoogle();
+                },
+              ),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              // Expanded(flex: 2, child: Container()),
             ],
           ),
         ),
