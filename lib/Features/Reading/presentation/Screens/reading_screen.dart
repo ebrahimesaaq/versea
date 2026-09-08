@@ -2,22 +2,23 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:versea/Features/Reading/presentation/widgets/end_reading_button.dart';
 
+import 'package:versea/Features/Reading/presentation/widgets/end_reading_button.dart';
 import 'package:versea/Features/Reading/presentation/widgets/head_of_reading_screen.dart';
+import 'package:versea/Features/Reading/presentation/widgets/save_reading_functions.dart';
 import 'package:versea/Features/Reading/presentation/widgets/verses_list_view_builder.dart';
+
 import 'package:versea/generated/l10n.dart';
-import 'package:versea/main.dart';
+import 'package:versea/services/connectivity_checker.dart';
 
 import 'package:versea/utils/Core/custom_scaffold.dart';
 import 'package:versea/utils/Core/widgets/custom_app_bar.dart';
 import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
 
-import 'package:versea/utils/routes/consts.dart';
-
 class ReadingScreen extends StatefulWidget {
   final BibleBookModel book;
   final int chapterID;
+
   const ReadingScreen({super.key, required this.book, required this.chapterID});
 
   @override
@@ -25,11 +26,14 @@ class ReadingScreen extends StatefulWidget {
 }
 
 class _ReadingScreenState extends State<ReadingScreen> {
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
+
   late int chapterId;
 
   Map<String, dynamic> data = {};
   List<String> verses = [];
+
+  late Future<void> getAVerses;
 
   Future<void> getVerses() async {
     final jsonString = await rootBundle.loadString(
@@ -46,16 +50,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
       }
     }
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
-
-  late Future<void> getAVerses;
 
   @override
   void initState() {
-    chapterId = widget.chapterID;
-    getAVerses = getVerses();
     super.initState();
+
+    chapterId = widget.chapterID;
+
+    getAVerses = getVerses();
   }
 
   @override
@@ -71,8 +77,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
             body: Column(
               children: [
                 CustomAppBar(title: S.of(context).title),
-                SizedBox(height: 50),
-                Center(child: CircularProgressIndicator()),
+                const SizedBox(height: 50),
+                const Center(child: CircularProgressIndicator()),
               ],
             ),
           )
@@ -80,28 +86,40 @@ class _ReadingScreenState extends State<ReadingScreen> {
             body: Column(
               children: [
                 CustomAppBar(title: S.of(context).title),
-                SizedBox(height: 50),
+
+                const SizedBox(height: 50),
+
                 HeadOfReadingPage(
                   onChapterChanged: (chapter) async {
                     chapterId = chapter;
+
                     await getVerses();
+
+                    if (!mounted) return;
+
                     await scrollController.animateTo(
                       0,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
                   },
+
                   book: widget.book,
+
                   chapterID: chapterId,
+
                   data: data,
                 ),
+
                 Expanded(
                   child: SingleChildScrollView(
                     controller: scrollController,
                     child: Column(
                       children: [
                         VersesListViewBuilder(verses: verses),
-                        SizedBox(height: 30),
+
+                        const SizedBox(height: 30),
+
                         EndReadingButton(
                           onPressed: () {
                             endReadingFunction(context);
@@ -116,52 +134,95 @@ class _ReadingScreenState extends State<ReadingScreen> {
           );
   }
 
-  void endReadingFunction(BuildContext context) async {
+  Future<void> endReadingFunction(BuildContext context) async {
     final bookId = widget.book.id;
-    final chapter = data['chapter']['number'];
 
+    final bool connected = await ConnectionChecker().check();
+
+    if (connected) {
+      await onlineSave(bookId, context);
+    } else {
+      await offlineSave(bookId, context);
+    }
+  }
+
+  Future<void> onlineSave(dynamic bookId, BuildContext context) async {
     if (chapterId < widget.book.chapters) {
+      // الفصل الذي انتهى المستخدم من قراءته
+      final int previousChapter = chapterId;
+
+      // الانتقال للفصل التالي
       chapterId++;
-      getVerses();
-      chapterIsNotLastChapter(bookId, chapter);
+
+      // تحميل الفصل الجديد
+      await getVerses();
+
+      // حفظ التقدم على Firebase
+      InterNetConnectedSaveReadingFunctions().notLastChapter(
+        bookId,
+        widget.book.name,
+        widget.book.chapters,
+        previousChapter,
+      );
+
+      if (!mounted) return;
+
+      // العودة إلى بداية الفصل الجديد
       await scrollController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-
-      setState(() {});
     } else {
+      // المستخدم أنهى آخر فصل
+      await InterNetConnectedSaveReadingFunctions().lastChapter(
+        bookId,
+        widget.book.name,
+      );
+
+      if (!mounted) return;
+
       Navigator.pop(context);
-      chapterIsLastChapter(bookId);
     }
   }
 
-  void chapterIsLastChapter(int bookId) {
-    if (bookId >= 40) {
-      prefs?.setString('newBookName', booksData[widget.book.id]['name']);
-      prefs?.setInt('newBookID', widget.book.id + 1);
-      prefs?.setInt('newChapter', 1);
-      prefs?.setInt('newChapterCount', booksData[widget.book.id]['chapters']);
-    } else {
-      prefs?.setString('oldBookName', booksData[widget.book.id]['name']);
-      prefs?.setInt('oldBookID', widget.book.id + 1);
-      prefs?.setInt('oldChapter', 1);
-      prefs?.setInt('oldChapterCount', booksData[widget.book.id]['chapters']);
-    }
-  }
+  Future<void> offlineSave(dynamic bookId, BuildContext context) async {
+    if (chapterId < widget.book.chapters) {
+      // الفصل الذي انتهى المستخدم من قراءته
+      final int previousChapter = chapterId;
 
-  void chapterIsNotLastChapter(int bookId, chapter) {
-    if (bookId >= 40) {
-      prefs?.setString('newBookName', widget.book.name);
-      prefs?.setInt('newBookID', widget.book.id);
-      prefs?.setInt('newChapter', chapter + 1);
-      prefs?.setInt('newChapterCount', widget.book.chapters);
+      // الانتقال للفصل التالي
+      chapterId++;
+
+      // تحميل الفصل الجديد
+      await getVerses();
+
+      // حفظ التقدم محليًا
+      InternetDisconnectedSaveReadingFunctions().notLastChapter(
+        bookId,
+        widget.book.name,
+        widget.book.chapters,
+        previousChapter,
+      );
+
+      if (!mounted) return;
+
+      // العودة إلى بداية الفصل الجديد
+      await scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
-      prefs?.setString('oldBookName', widget.book.name);
-      prefs?.setInt('oldBookID', widget.book.id);
-      prefs?.setInt('oldChapter', chapter + 1);
-      prefs?.setInt('oldChapterCount', widget.book.chapters);
+      // المستخدم أنهى آخر فصل
+      InternetDisconnectedSaveReadingFunctions().lastChapter(
+        bookId,
+        widget.book.name,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context);
     }
   }
 }

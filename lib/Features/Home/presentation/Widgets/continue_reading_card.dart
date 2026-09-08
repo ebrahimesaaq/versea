@@ -35,9 +35,9 @@ class ContinueReadingCard extends StatelessWidget {
           context: context,
           book: BibleBookModel(
             code: bibleBooks[bookID].code,
-            name: bibleBooks[bookID - 1].name,
-            chapters: bibleBooks[bookID - 1].chapters,
-            id: bookID,
+            name: bibleBooks[bookID].name,
+            chapters: bibleBooks[bookID].chapters,
+            id: bibleBooks[bookID].id,
           ),
           chapterID: chapterID,
         );

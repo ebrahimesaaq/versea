@@ -22,7 +22,6 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GoogleSignIn.instance.initialize();
-
   HiveInit().init();
   runApp(const MyApp());
 }

@@ -34,7 +34,7 @@ class ContinueReadingWidget extends StatelessWidget {
         prefs!.getInt('newBookID') == null
             ? SizedBox()
             : ContinueReadingCard(
-                bookID: prefs?.getInt('newBookID') ?? 50,
+                bookID: prefs?.getInt('newBookID') ?? 40,
                 chapterCount: prefs?.getInt('newChapterCount') ?? 0,
                 chapterID: prefs?.getInt('newChapter') ?? 0,
                 bookName: prefs?.getString('newBookName') ?? 'انجيل متى',

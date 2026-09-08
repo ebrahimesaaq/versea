@@ -27,30 +27,17 @@ class WelcomeCategory extends StatelessWidget {
             return Row(
               children: [
                 Text(
-                  '${S.of(context).welcome} ',
+                  '${S.of(context).welcome}, ',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 snapshot.data == null
-                    ? FirebaseAuth.instance.currentUser?.displayName == null
-                          ? Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            )
-                          : Text(
-                              (FirebaseAuth.instance.currentUser!.displayName!)
-                                  .split(' ')
-                                  .first,
-
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
+                    ? Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
                     : Text(
                         '${snapshot.data}',
                         style: TextStyle(

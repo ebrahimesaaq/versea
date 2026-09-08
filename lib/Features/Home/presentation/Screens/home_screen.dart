@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:versea/Features/Home/presentation/Widgets/categories_category.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:versea/Features/Bible/presentation/Screens/testament_screen.dart';
 import 'package:versea/Features/Home/presentation/Widgets/continue_reading_widget.dart';
 import 'package:versea/Features/Home/presentation/Widgets/verse_of_the_day_category.dart';
 import 'package:versea/Features/Home/presentation/Widgets/welcome_category.dart';
@@ -36,10 +37,49 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
+      body: PersistentTabView(
+        margin: EdgeInsets.all(4),
+        tabs: [
+          PersistentTabConfig(
+            screen: HomePageListView(),
+            item: ItemConfig(
+              icon: Icon(Icons.home_outlined),
+              title: 'الصفحة الرئيسية',
+            ),
+          ),
+          PersistentTabConfig(
+            screen: TestamentScreen(),
+            item: ItemConfig(
+              icon: Icon(Icons.menu_book_rounded),
+              title: 'الكتاب المقدس',
+            ),
+          ),
+          PersistentTabConfig(
+            screen: CustomScaffold(body: SizedBox()),
+            item: ItemConfig(icon: Icon(Icons.settings), title: 'الاعدادات'),
+          ),
+        ],
+        navBarBuilder: (navBarConfig) =>
+            Style9BottomNavBar(navBarConfig: navBarConfig),
+      ),
+    );
+  }
+}
+
+class HomePageListView extends StatefulWidget {
+  const HomePageListView({super.key});
+
+  @override
+  State<HomePageListView> createState() => _HomePageListViewState();
+}
+
+class _HomePageListViewState extends State<HomePageListView> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomScaffold(
       body: RefreshIndicator(
         onRefresh: () async {
           setState(() {});
-          // GoRouter.of(context).pushReplacement(AppRouter.kHomeView);
         },
         child: ListView(
           padding: EdgeInsets.zero,
@@ -53,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 children: [
                   WelcomeCategory(),
                   VerseOfTheDayCategory(),
-                  CategoriesCategory(),
+                  // CategoriesCategory(),
                   SizedBox(height: 12),
                   prefs!.getInt('newBookID') == null &&
                           prefs!.getInt('oldBookID') == null
