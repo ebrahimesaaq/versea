@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,8 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:versea/Features/authentication/auth_cubit/login_cubit/login_cubit.dart';
 import 'package:versea/Features/authentication/auth_cubit/register_cubit/register_cubit.dart';
 import 'package:versea/firebase_options.dart';
+import 'package:versea/services/connectivity_checker.dart';
+import 'package:versea/services/sync_services.dart';
 import 'package:versea/utils/Core/languages/langs.dart';
-import 'package:versea/utils/data_source/hive_init.dart';
 import 'package:versea/utils/routes/app_router.dart';
 import 'generated/l10n.dart';
 import 'package:versea/utils/Core/themes.dart';
@@ -22,7 +24,13 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GoogleSignIn.instance.initialize();
-  HiveInit().init();
+  final user = FirebaseAuth.instance.currentUser?.uid;
+  if (user != null) {
+    final connectionChecker = ConnectionChecker();
+    connectionChecker.listen(() async {
+      SyncServices().sync();
+    });
+  }
   runApp(const MyApp());
 }
 

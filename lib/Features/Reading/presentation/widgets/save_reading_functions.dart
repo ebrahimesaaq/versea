@@ -47,12 +47,11 @@ class InterNetConnectedSaveReadingFunctions {
     final String prefix = isNewTestament ? 'new' : 'old';
 
     final now = DateTime.now().toString();
-
+    bookId--;
     await prefs?.setBool('${prefix}NewSaved', true);
     await prefs?.setString('${prefix}BookName', bookName);
     await prefs?.setString('${prefix}Time', now);
 
-    // لا نطرح 1 من bookId
     await prefs?.setInt('${prefix}BookID', bookId);
 
     // chapterID هو الفصل الذي انتهى المستخدم منه

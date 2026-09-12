@@ -164,7 +164,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
         widget.book.chapters,
         previousChapter,
       );
-
       if (!mounted) return;
 
       // العودة إلى بداية الفصل الجديد
@@ -179,7 +178,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
         bookId,
         widget.book.name,
       );
-
       if (!mounted) return;
 
       Navigator.pop(context);
