@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class VersesListViewBuilder extends StatelessWidget {
-  const VersesListViewBuilder({super.key, required this.verses});
+  const VersesListViewBuilder({
+    super.key,
+    required this.verses,
+    required this.fontSize,
+  });
 
   final List<String> verses;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class VersesListViewBuilder extends StatelessWidget {
           },
           title: Text(
             '${index + 1} ${verses[index]}',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: fontSize),
           ),
         );
       },

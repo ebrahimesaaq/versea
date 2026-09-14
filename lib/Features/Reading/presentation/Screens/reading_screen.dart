@@ -9,6 +9,7 @@ import 'package:versea/Features/Reading/presentation/widgets/save_reading_functi
 import 'package:versea/Features/Reading/presentation/widgets/verses_list_view_builder.dart';
 
 import 'package:versea/generated/l10n.dart';
+import 'package:versea/main.dart';
 import 'package:versea/services/connectivity_checker.dart';
 
 import 'package:versea/utils/Core/custom_scaffold.dart';
@@ -29,7 +30,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   final ScrollController scrollController = ScrollController();
 
   late int chapterId;
-
+  double verseFontSize = prefs?.getDouble('font_size') ?? 18;
+  late double initialFontSize;
   Map<String, dynamic> data = {};
   List<String> verses = [];
 
@@ -58,7 +60,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   void initState() {
     super.initState();
-
+    initialFontSize = verseFontSize;
     chapterId = widget.chapterID;
 
     getAVerses = getVerses();
@@ -116,7 +118,29 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     controller: scrollController,
                     child: Column(
                       children: [
-                        VersesListViewBuilder(verses: verses),
+                        GestureDetector(
+                          onScaleStart: (details) {
+                            initialFontSize = verseFontSize;
+                          },
+                          onScaleUpdate: (details) {
+                            if (details.pointerCount >= 2) {
+                              setState(() {
+                                verseFontSize =
+                                    (initialFontSize * details.scale).clamp(
+                                      12.00,
+                                      40.00,
+                                    );
+                              });
+                            }
+                          },
+                          onScaleEnd: (details) {
+                            prefs!.setDouble('font_size', verseFontSize);
+                          },
+                          child: VersesListViewBuilder(
+                            verses: verses,
+                            fontSize: verseFontSize,
+                          ),
+                        ),
 
                         const SizedBox(height: 30),
 
