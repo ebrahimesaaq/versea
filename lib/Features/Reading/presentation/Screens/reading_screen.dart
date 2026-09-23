@@ -15,6 +15,7 @@ import 'package:versea/services/connectivity_checker.dart';
 import 'package:versea/utils/Core/custom_scaffold.dart';
 import 'package:versea/utils/Core/widgets/custom_app_bar.dart';
 import 'package:versea/utils/data_source/local_data_source/bible_book_model.dart';
+import 'package:versea/utils/routes/home_refresh_notifier.dart';
 
 class ReadingScreen extends StatefulWidget {
   final BibleBookModel book;
@@ -202,6 +203,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         bookId,
         widget.book.name,
       );
+      homeRefreshNotifier.value++;
       if (!mounted) return;
 
       Navigator.pop(context);
@@ -241,7 +243,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         bookId,
         widget.book.name,
       );
-
+      homeRefreshNotifier.value++;
       if (!mounted) return;
 
       Navigator.pop(context);

@@ -180,10 +180,13 @@ Future<void> oldTestSync(
   );
 
   if (comparingResult == 'remote') {
-    await prefs?.setInt('oldBookID', remoteLastRead['book_id']);
+    await prefs?.setInt('oldBookID', int.parse(remoteLastRead['book_id']));
     await prefs?.setString('oldBookName', remoteLastRead['book_name']);
-    await prefs?.setInt('oldChapter', remoteLastRead['chapter']);
-    await prefs?.setInt('oldChapterCount', remoteLastRead['chapter_count']);
+    await prefs?.setInt('oldChapter', int.parse(remoteLastRead['chapter']));
+    await prefs?.setInt(
+      'oldChapterCount',
+      int.parse(remoteLastRead['chapter_count']),
+    );
     await prefs?.setString('oldTime', remoteLastRead['time']);
   } else if (comparingResult == 'local') {
     await FirebaseFirestore.instance

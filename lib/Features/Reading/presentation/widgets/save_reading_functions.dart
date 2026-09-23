@@ -110,7 +110,7 @@ class InternetDisconnectedSaveReadingFunctions {
     await prefs?.setBool('${prefix}NewSaved', true);
     await prefs?.setString('${prefix}BookName', bookName);
     await prefs?.setString('${prefix}Time', now);
-    await prefs?.setInt('${prefix}BookID', bookId);
+    await prefs?.setInt('${prefix}BookID', bookId - 1);
     await prefs?.setInt('${prefix}Chapter', chapterID + 1);
     await prefs?.setInt('${prefix}ChapterCount', chapterCount);
   }
