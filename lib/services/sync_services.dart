@@ -40,13 +40,10 @@ class SyncServices {
               'chapter_count': int.parse(localNew['chapter_count']),
             });
       } else if (remoteNew != null && localNew['time'] == null) {
-        await prefs?.setInt('newBookID', int.parse(remoteNew['book_id']));
+        await prefs?.setInt('newBookID', remoteNew['book_id']);
         await prefs?.setString('newBookName', remoteNew['book_name']);
-        await prefs?.setInt('newChapter', int.parse(remoteNew['chapter']));
-        await prefs?.setInt(
-          'newChapterCount',
-          int.parse(remoteNew['chapter_count']),
-        );
+        await prefs?.setInt('newChapter', remoteNew['chapter']);
+        await prefs?.setInt('newChapterCount', remoteNew['chapter_count']);
         await prefs?.setString('newTime', remoteNew['time']);
       }
 

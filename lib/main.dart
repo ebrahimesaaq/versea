@@ -8,6 +8,7 @@ import 'package:versea/Features/authentication/auth_cubit/login_cubit/login_cubi
 import 'package:versea/Features/authentication/auth_cubit/register_cubit/register_cubit.dart';
 import 'package:versea/firebase_options.dart';
 import 'package:versea/services/connectivity_checker.dart';
+import 'package:versea/services/notification_service.dart';
 import 'package:versea/services/sync_services.dart';
 import 'package:versea/utils/Core/languages/langs.dart';
 import 'package:versea/utils/routes/app_router.dart';
@@ -31,6 +32,9 @@ void main() async {
       SyncServices().sync();
     });
   }
+  await NotificationService.initialize();
+  await NotificationService.requestPermission();
+  await NotificationService.scheduleReadingReminder(hour: 21, minute: 00);
   runApp(const MyApp());
 }
 
